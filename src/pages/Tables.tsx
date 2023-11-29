@@ -6,31 +6,26 @@ const Tables = () => {
   const [membershipData, setMembershipData] = useState([]);
   const handleSwitchToggle = async (memberToUpdate) => {
     try {
-      // Toggle the approval status locally
       const updatedData = membershipData.map(member => {
         if (member._id === memberToUpdate._id) {
           return { ...member, approved: !member.approved };
         }
         return member;
       });
-
-      setMembershipData(updatedData); // Update the local state
-
-      // Send a PATCH request to update the approval status in the backend
-      await axios.patch(`/api/update-approval/${memberToUpdate._id}`, {
+      setMembershipData(updatedData);
+      const apiUrl = `http://localhost:8080/api/membership/update-approval?id=${memberToUpdate._id}`;
+      await axios.patch(apiUrl, {
         approved: !memberToUpdate.approved,
       });
-
-      // Optionally handle success or error feedback
+  
     } catch (error) {
       console.error('Error updating approval status:', error);
-      // Optionally handle error feedback
     }
   };
+  
 
   useEffect(() => {
-    // Fetch data from the server
-    axios.get('http://localhost:8080/api/membership/all') // Replace '/all' with your server endpoint
+    axios.get('http://localhost:8080/api/membership/all')
       .then(response => {
         setMembershipData(response.data);
       })
@@ -92,11 +87,10 @@ const Tables = () => {
           <div>
       <span>{member.approved ? 'Approved' : 'Not Approved'}</span>
       <label className="switch">
-        <input type="checkbox" checked={member.approved}  onChange={handleSwitchToggle} />
+      <input type="checkbox" checked={member.approved} onChange={() => handleSwitchToggle(member)} />
         <span className="slider round"></span>
       </label>
     </div>
-          {/* Add more details based on your membership data structure */}
     </div>
   ))}
 </div>
